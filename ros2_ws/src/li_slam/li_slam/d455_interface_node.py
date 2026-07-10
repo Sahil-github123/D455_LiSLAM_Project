@@ -32,40 +32,6 @@ from li_slam.frame_measurement import FrameMeasurement, LandmarkMeasurement
 # from li_slam.pandas_logger import PandasLogger
 from li_slam.mydata_logger import DataLogger
 
-from rclpy.qos import QoSProfile
-from rclpy.qos import ReliabilityPolicy
-from rclpy.qos import HistoryPolicy
-
-# TODO: Later, we should do using this
-# @dataclass
-# class TrackingResult:
-    # good_new: np.ndarray
-    # good_old: np.ndarray
-    # redetected: bool
-
-
-class Landmark:
-    def __init__(self, landmark_id, descriptor, pixel):
-
-        self.id = landmark_id
-        self.descriptor = descriptor
-        self.pixel = pixel
-        self.observations = 1
-        self.age = 0        # Start with zero / one ?
-        self.last_seen = time.time()
-
-
-# Because in the paper you're implementing,
-# the observer estimates landmarks (persistent map entities),
-# while optical flow produces tracks (temporary image measurements).
-# Mixing those concepts into one dictionary quickly becomes messy.
-class FeatureTrack:
-    pass
-
-
-class LandmarkManager:
-    pass
-
 
 # ──────────────────────────────────────────────────────────────────────────────
 # ROS2 Node
