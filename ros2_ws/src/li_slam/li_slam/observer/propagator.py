@@ -23,6 +23,8 @@ class Propagator:
         self.initialized = False
         self.init_accel_samples = []
         self.init_gyro_samples = []
+        self.accel_residuals = []
+        self.corrected_gyro_samples = []
         
         self.accel_bias = np.zeros(3)
         self.gyro_bias = np.zeros(3, dtype=np.float64)
@@ -35,7 +37,9 @@ class Propagator:
         if not self.initialized:
             self.init_accel_samples.extend(frame.accel_samples)
             self.init_gyro_samples.extend(frame.gyro_samples)
-            if len(self.init_accel_samples) < 100:
+            # if len(self.init_accel_samples) < 100:
+            #     return
+            if (len(self.init_accel_samples) < 100 or len(self.init_gyro_samples) < 100):
                 return
 
             self.initialize_from_stationary(state, self.init_accel_samples, self.init_gyro_samples)
@@ -77,7 +81,7 @@ class Propagator:
                 continue
 
             # --- 1. Orientation propagation ---
-            corrected_gyro = prev.gyro - self.gyro_bias
+            corrected_gyro = prev.gyro - self.gyro_bias         # mathematically a zero-order hold assumption, ω(t)=ω_prev​ and a(t)=a_prev​
             dtheta = corrected_gyro * dt
             state.R = (state.R  @  so3_exp(dtheta) )
             state.R = project_to_so3(state.R)
@@ -88,20 +92,31 @@ class Propagator:
             # a_world = (state.R @ prev.accel + self.gravity )
 
             # --- 3. Position propagation ---
-            state.x += state.v * dt
-
+            # state.x += state.v * dt             # Simple forward Euler integration
+            state.x += state.v * dt + 0.5 * a_world * dt * dt   # Forward Euler integration with acceleration term
+            
             # --- 4. Velocity propagation ---
             state.v += a_world * dt
+            
+            # Our diagnostic was just printing the instantaneous |a_world|. Instead, add a running or per-frame average.
+            self.accel_residuals.append(np.linalg.norm(a_world))
+            print("Mean |a_world|:", np.mean(self.accel_residuals[-100:]))
+            self.corrected_gyro_samples.append(corrected_gyro.copy())
+            mean_gyro = np.mean(self.corrected_gyro_samples[-100:], axis=0)
+            # Format each element in the array to 5 decimal places
+            formatted_gyro = [f"{x:.5f}" for x in mean_gyro]
+            print(f"Mean corrected gyro: {formatted_gyro}  |  "
+                  f"norm: {np.linalg.norm(mean_gyro):.5f}" )      # This is more meaningful than individual samples because the IMU has noise
 
             # print(  "a_body:", prev.accel,
             #         "a_world:", a_world,
             #         "norm:", np.linalg.norm(a_world) )
-            print(
-                f"dt={dt:.5f} | "
-                f"|a_world|={np.linalg.norm(a_world):.5f} | "
-                f"|gyro|={np.linalg.norm(prev.gyro):.5f} | "    # This will let us distinguish accelerometer bias from gyro-induced attitude drift
-                f"|v|={np.linalg.norm(state.v):.5f} | "
-                f"|x|={np.linalg.norm(state.x):.5f}"
+            print(f"dt={dt:.5f} | "
+                  f"|a_world|={np.linalg.norm(a_world):.5f} | "
+                  f"|gyro_raw|={np.linalg.norm(prev.gyro):.5f} | "
+                  f"|gyro_corrected|={np.linalg.norm(corrected_gyro):.5f} | "
+                  f"|v|={np.linalg.norm(state.v):.5f} | "
+                  f"|x|={np.linalg.norm(state.x):.5f}"
             )
     
     
