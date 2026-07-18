@@ -31,6 +31,7 @@ from li_slam.imu_buffer import IMUBuffer
 from li_slam.frame_measurement import FrameMeasurement, LandmarkMeasurement
 # from li_slam.pandas_logger import PandasLogger
 from li_slam.mydata_logger import DataLogger
+from li_slam.observer.observer import Observer
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -62,6 +63,7 @@ class D455Interface(Node):
         self._orb     = cv2.ORB_create(nfeatures=500)
         self._lm_mgr  = LandmarkManager()
         self._imu_buf = IMUBuffer()
+        self._observer = Observer()
 
         # Optical flow state
         self._prev_gray:   np.ndarray | None = None
@@ -217,14 +219,13 @@ class D455Interface(Node):
         self._lm_mgr.prune_stale()
 
         # Phase 4: pull IMU samples that arrived since the previous image
-        gyro_samples, accel_samples = self._imu_buf.extract_window(
-            self._prev_image_time, timestamp)
+        gyro_samples, accel_samples = self._imu_buf.extract_window(self._prev_image_time, timestamp)
         self._prev_image_time = timestamp
 
         # Phase 6: assemble the frame measurement and hand it off
-        frame_measurement = self._build_frame_measurement(
-            timestamp, gyro_samples, accel_samples)
-        self._on_frame_measurement(frame_measurement)
+        frame_measurement = self._build_frame_measurement(timestamp, gyro_samples, accel_samples)
+        # self._on_frame_measurement(frame_measurement)
+        self._observer.process(frame_measurement)
 
         # Logging
         now = time.time()
