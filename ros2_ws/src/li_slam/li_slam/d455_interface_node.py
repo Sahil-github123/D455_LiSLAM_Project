@@ -379,6 +379,11 @@ class D455Interface(Node):
         """Save all logged data before shutting down."""
         if hasattr(self, '_my_logger'):
             self._my_logger.close()
+        if hasattr(self, '_observer'):
+            from li_slam.observer.observer_diagnostics import plot_diagnostics
+            self._observer.save_diagnostics("d455_logs/li_slam_diag.npz")
+            plot_diagnostics(self._observer.diag, self._observer.state,
+                            save_dir="d455_logs", show=False)
         super().destroy_node()
 
 
@@ -389,16 +394,17 @@ class D455Interface(Node):
 def main():
     rclpy.init()
     node = D455Interface()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
-    # try:
-    #     rclpy.spin(node)
-    # except KeyboardInterrupt:
-    #     node.get_logger().info("Shutting down...")
-    # finally:
-    #     node.destroy_node()
-    #     rclpy.shutdown()
+    # rclpy.spin(node)
+    # node.destroy_node()
+    # rclpy.shutdown()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        node.get_logger().info("Shutting down...")
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
 
 
 if __name__ == '__main__':

@@ -100,24 +100,24 @@ class Propagator:
             
             # Our diagnostic was just printing the instantaneous |a_world|. Instead, add a running or per-frame average.
             self.accel_residuals.append(np.linalg.norm(a_world))
-            print("Mean |a_world|:", np.mean(self.accel_residuals[-100:]))
+            # print("Mean |a_world|:", np.mean(self.accel_residuals[-100:]))
             self.corrected_gyro_samples.append(corrected_gyro.copy())
             mean_gyro = np.mean(self.corrected_gyro_samples[-100:], axis=0)
             # Format each element in the array to 5 decimal places
             formatted_gyro = [f"{x:.5f}" for x in mean_gyro]
-            print(f"Mean corrected gyro: {formatted_gyro}  |  "
-                  f"norm: {np.linalg.norm(mean_gyro):.5f}" )      # This is more meaningful than individual samples because the IMU has noise
+            # print(f"Mean corrected gyro: {formatted_gyro}  |  "
+                #   f"norm: {np.linalg.norm(mean_gyro):.5f}" )      # This is more meaningful than individual samples because the IMU has noise
 
             # print(  "a_body:", prev.accel,
             #         "a_world:", a_world,
             #         "norm:", np.linalg.norm(a_world) )
-            print(f"dt={dt:.5f} | "
-                  f"|a_world|={np.linalg.norm(a_world):.5f} | "
-                  f"|gyro_raw|={np.linalg.norm(prev.gyro):.5f} | "
-                  f"|gyro_corrected|={np.linalg.norm(corrected_gyro):.5f} | "
-                  f"|v|={np.linalg.norm(state.v):.5f} | "
-                  f"|x|={np.linalg.norm(state.x):.5f}"
-            )
+            # print(f"dt={dt:.5f} | "
+            #       f"|a_world|={np.linalg.norm(a_world):.5f} | "
+            #       f"|gyro_raw|={np.linalg.norm(prev.gyro):.5f} | "
+            #       f"|gyro_corrected|={np.linalg.norm(corrected_gyro):.5f} | "
+            #       f"|v|={np.linalg.norm(state.v):.5f} | "
+            #       f"|x|={np.linalg.norm(state.x):.5f}"
+            # )
     
     
     def _build_timeline(self, gyro_samples, accel_samples):
