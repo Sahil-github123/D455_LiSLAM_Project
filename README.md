@@ -1,3 +1,3 @@
 # D455_LiSLAM_Project
 
-IITB Project under professor Ravi Banavar
+IITB B.Tech. Project (BTP) under Professor Ravi Banavar
