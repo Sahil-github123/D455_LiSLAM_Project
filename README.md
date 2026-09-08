@@ -50,10 +50,10 @@ $$
 
 where:
 
-* \(R \in SO(3)\): attitude
-* \(p \in \mathbb{R}^3\): position
-* \(v \in \mathbb{R}^3\): velocity
-* \(p_i \in \mathbb{R}^3\): \(i\)-th landmark position
+* R in SO(3): attitude
+* p in {R}^3: position
+* v in {R}^3: velocity
+* p_i in {R}^3: i-th landmark position
 
 The inertial propagation is driven by angular velocity and acceleration measurements:
 
@@ -84,9 +84,7 @@ The observer gains \(k_R,\;k_v,\;k_p,\;k_x\) control the correction dynamics.
 
 ---
 
-## What Was Implemented
-
-The theoretical observer was integrated with a practical RGB-D/IMU frontend consisting of:
+## What Is Implemented So Far
 
 * ORB-based feature detection
 * KLT optical-flow tracking between frames
@@ -99,7 +97,7 @@ The theoretical observer was integrated with a practical RGB-D/IMU frontend cons
 * ROS 2 integration and experimental data logging
 
 ---
-
+<!-- 
 ## Main Contribution / Improvements
 
 The primary focus of this implementation is **bridging the gap between the theoretical LiSLAM observer and real sensor data**.
@@ -123,16 +121,18 @@ A landmark manager maintains feature-to-landmark associations and distinguishes 
 The observer was adapted to handle real IMU and RGB-D measurements, including timestamp-based propagation, sensor noise, feature tracking failures, and depth measurement errors.
 
 ---
+-->
 
 ## Results
 
-The system was successfully demonstrated on the D455 with:
-
+The system was successfully demonstrated on the D455.
+<!-- 
 * Continuous visual feature tracking
 * 3D landmark generation
 * IMU-based state propagation
 * Landmark-based observer correction
 * Online map construction
+-->
 
 A representative development run produced:
 
