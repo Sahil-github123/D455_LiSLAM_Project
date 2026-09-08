@@ -166,6 +166,6 @@ Future work includes:
 
 ## Reference
 
-**Synchronous Observer Design for Landmark-Inertial SLAM with Almost-Global Convergence**
+**["Synchronous Observer Design for Landmark-Inertial SLAM with Almost-Global Convergence", Arkadeep Saha, Pieter van Goor, Antonio Franchi, Ravi Banavar](https://doi.org/10.48550/arXiv.2511.04531)**
 
 The observer formulation and convergence properties are based on the above work; this repository focuses on its implementation and adaptation to a real RGB-D/IMU system.
